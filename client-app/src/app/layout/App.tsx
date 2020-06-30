@@ -1,45 +1,36 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Header, Icon, List } from 'semantic-ui-react';
 import axios from 'axios';
 import {IActivity} from '../models/activity'
 
-//make an interface so that we can specify activities is an array of IActivity when implementing componentDidMount()
-interface IState{
-  activities: IActivity[]
-}
 
-//empty props parameter since not passing anything down, pass in IState for state paramater
-class App extends Component<{}, IState>{
-  readonly state: IState = {
-    activities: []
-  }
+const App = () => {
+  //pass in an array: param1 = state, param2 = function we will use to set the state
+  const [activities, setActivities] = useState<IActivity[]>([]);
 
-  //use readonly so we can avoid altering state using this.state = instead of using this.setState() 
-  componentDidMount(){
+  //response.data will be a an array of IActivity (strongly typed)
+  useEffect(() => {
     axios.get<IActivity[]>('http://localhost:5000/api/activities')
-    .then((response) =>{
-      this.setState({
-        activities: response.data
-      })
+    .then(response =>{
+      setActivities(response.data)
     })
-  }
+  }, []);
+  //[] second param of empty array ensures useEffect will only run once and not each time the component renders (equivalent usage of componentDidMount)
+  //useEffect is a combination of componentDidMount, componentDidUpdate, componentWillUnmount
 
-  render(){
-    return (
-      <div>
-        <Header as='h2'>
-          <Icon name='users' />
-          <Header.Content>Reactivities</Header.Content>
-        </Header>
-        <List>
-          {this.state.activities.map((activity) => (
-            <List.Item key = {activity.id}>{activity.title}</List.Item>
-          ))}
-        </List>
-      </div>
-    );
-  }
-  
+  return (
+    <div>
+      <Header as='h2'>
+        <Icon name='users' />
+        <Header.Content>Reactivities</Header.Content>
+      </Header>
+      <List>
+        {activities.map(activity => (
+          <List.Item key = {activity.id}>{activity.title}</List.Item>
+        ))}
+      </List>
+    </div>
+  );
 }
 
 export default App;
