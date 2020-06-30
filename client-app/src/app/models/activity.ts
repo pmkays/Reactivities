@@ -5,6 +5,7 @@ export interface IActivity{
     date: Date;
     city: string;
     venue: string;
+    category: string;
 }
 
 //doesn't show up in JS;  we want strong typing for our TS to avoid error.
